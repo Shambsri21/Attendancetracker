@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Employee Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Stats Cards Row -->
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body bg-primary bg-gradient text-white rounded">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Total Employees</h6>
+                            <h2 class="card-title mb-0">{{ total_employees }}</h2>
+                        </div>
+                        <div class="rounded-circle bg-white bg-opacity-25 p-3">
+                            <i class="fas fa-users fa-2x text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body bg-success bg-gradient text-white rounded">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Present Today</h6>
+                            <h2 class="card-title mb-0">{{ present_today }}</h2>
+                        </div>
+                        <div class="rounded-circle bg-white bg-opacity-25 p-3">
+                            <i class="fas fa-user-check fa-2x text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body bg-info bg-gradient text-white rounded">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Departments</h6>
+                            <h2 class="card-title mb-0">{{ total_departments }}</h2>
+                        </div>
+                        <div class="rounded-circle bg-white bg-opacity-25 p-3">
+                            <i class="fas fa-building fa-2x text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body bg-warning bg-gradient text-white rounded">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-subtitle mb-2">Attendance Rate</h6>
+                            <h2 class="card-title mb-0">{{ (present_today / total_employees * 100)|round|int }}%</h2>
+                            <small class="text-white-50">Today's Rate</small>
+                        </div>
+                        <div class="rounded-circle bg-white bg-opacity-25 p-3">
+                            <i class="fas fa-calendar-check fa-2x text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Activity Row -->
+    <div class="row">
+        <!-- Department Distribution Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-pie text-primary me-2"></i>
+                            Department Distribution
+                        </h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="departmentChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-clock-history me-2"></i>Recent Activity
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_activities %}
+                    <div class="list-group list-group-flush">
+                        {% for activity in recent_activities %}
+                        <div class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                {% if activity.type == 'clock_in' %}
+                                    <div class="activity-icon bg-success-subtle p-2 rounded-circle me-3">
+                                        <i class="bi bi-box-arrow-in-right text-success"></i>
+                                    </div>
+                                {% elif activity.type == 'clock_out' %}
+                                    <div class="activity-icon bg-danger-subtle p-2 rounded-circle me-3">
+                                        <i class="bi bi-box-arrow-left text-danger"></i>
+                                    </div>
+                                {% elif activity.type == 'new_employee' %}
+                                    <div class="activity-icon bg-primary-subtle p-2 rounded-circle me-3">
+                                        <i class="bi bi-person-plus text-primary"></i>
+                                    </div>
+                                {% elif activity.type == 'update_employee' %}
+                                    <div class="activity-icon bg-info-subtle p-2 rounded-circle me-3">
+                                        <i class="bi bi-person-gear text-info"></i>
+                                    </div>
+                                {% elif activity.type == 'delete_employee' %}
+                                    <div class="activity-icon bg-danger-subtle p-2 rounded-circle me-3">
+                                        <i class="bi bi-person-x text-danger"></i>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <p class="mb-0">{{ activity.message }}</p>
+                                    <small class="text-muted">{{ activity.timestamp.strftime('%B %d, %Y %I:%M %p') }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="bi bi-clock-history text-muted" style="font-size: 2rem;"></i>
+                        </div>
+                        <p class="text-muted mb-0">No recent activity to display.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+.card {
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.bg-gradient {
+    background-image: linear-gradient(45deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+}
+.card-header {
+    padding: 1.25rem;
+}
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function() {
+    // Initialize chart when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the chart context
+        var ctx = document.getElementById('departmentChart').getContext('2d');
+        
+        // Get data from template - using direct Jinja2 variables
+        var departmentLabels = {{ department_labels | tojson | safe }};
+        var departmentData = {{ department_data | tojson | safe }};
+        
+        // Debug logging
+        console.log('Labels:', departmentLabels);
+        console.log('Data:', departmentData);
+        
+        // Chart colors
+        var colors = [
+            '#4361ee',
+            '#3a0ca3',
+            '#7209b7',
+            '#f72585',
+            '#4cc9f0',
+            '#4895ef',
+            '#560bad',
+            '#480ca8',
+            '#3f37c9',
+            '#4361ee'
+        ];
+
+        // Create chart configuration
+        var config = {
+            type: 'doughnut',
+            data: {
+                labels: departmentLabels,
+                datasets: [{
+                    data: departmentData,
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // Create new chart with debug logging
+        try {
+            var chart = new Chart(ctx, config);
+            console.log('Chart created successfully:', chart);
+        } catch (error) {
+            console.error('Error creating chart:', error);
+        }
+    });
+})();
+</script>
+{% endblock %} 

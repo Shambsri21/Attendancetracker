@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to TechCorp{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/logo.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 text-center">
+            <div class="logo-container">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <span class="logo-icon">TC</span>
+                    <span class="logo-text">TechCorp</span>
+                </a>
+            </div>
+            <h1 class="display-4 mb-4">Welcome to TechCorp</h1>
+            <p class="lead mb-4">Streamline your workforce management with our comprehensive employee management system.</p>
+            <div class="d-grid gap-2 d-md-block">
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg me-md-2">Login</a>
+                <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg">Sign Up</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

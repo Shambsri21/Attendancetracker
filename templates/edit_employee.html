@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Edit Employee</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="form-group mb-3">
+                            <label for="name">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ employee.name }}" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="department">Department</label>
+                            <select class="form-select" id="department" name="department" required>
+                                <option value="">Select Department</option>
+                                <option value="IT" {% if employee.department == 'IT' %}selected{% endif %}>Information Technology (IT)</option>
+                                <option value="Finance" {% if employee.department == 'Finance' %}selected{% endif %}>Finance</option>
+                                <option value="Marketing" {% if employee.department == 'Marketing' %}selected{% endif %}>Marketing</option>
+                                <option value="Operations" {% if employee.department == 'Operations' %}selected{% endif %}>Operations</option>
+                                <option value="Sales" {% if employee.department == 'Sales' %}selected{% endif %}>Sales</option>
+                                <option value="Research" {% if employee.department == 'Research' %}selected{% endif %}>Research & Development</option>
+                                <option value="Customer Service" {% if employee.department == 'Customer Service' %}selected{% endif %}>Customer Service</option>
+                                <option value="Administration" {% if employee.department == 'Administration' %}selected{% endif %}>Administration</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="position">Position</label>
+                            <select class="form-select" id="position" name="position" required>
+                                <option value="">Select Position</option>
+                                <option value="{{ employee.position }}" selected>{{ employee.position }}</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="salary">Salary</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" step="0.01" class="form-control" id="salary" name="salary" value="{{ employee.salary }}" required>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="password">New Password (leave blank to keep current)</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Update Employee</button>
+                            <a href="{{ url_for('employees') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add dynamic position options based on department
+document.getElementById('department').addEventListener('change', function() {
+    const department = this.value;
+    const positionSelect = document.getElementById('position');
+    const currentPosition = "{{ employee.position }}";
+    positionSelect.innerHTML = '<option value="">Select Position</option>';
+    
+    const positions = {
+        'IT': ['Software Engineer', 'System Administrator', 'Network Engineer', 'IT Manager', 'DevOps Engineer', 'QA Engineer'],
+        'Finance': ['Financial Analyst', 'Accountant', 'Finance Manager', 'Auditor', 'Treasurer'],
+        'Marketing': ['Marketing Manager', 'Marketing Specialist', 'Digital Marketer', 'Content Writer', 'Brand Manager'],
+        'Operations': ['Operations Manager', 'Project Manager', 'Business Analyst', 'Operations Coordinator'],
+        'Sales': ['Sales Manager', 'Sales Representative', 'Account Manager', 'Sales Coordinator'],
+        'Research': ['Research Scientist', 'Research Analyst', 'Product Developer', 'R&D Manager'],
+        'Customer Service': ['Customer Service Manager', 'Customer Support', 'Service Coordinator', 'Support Specialist'],
+        'Administration': ['Administrative Manager', 'Office Manager', 'Executive Assistant', 'Coordinator']
+    };
+
+    if (positions[department]) {
+        positions[department].forEach(position => {
+            const option = document.createElement('option');
+            option.value = position;
+            option.textContent = position;
+            if (position === currentPosition) {
+                option.selected = true;
+            }
+            positionSelect.appendChild(option);
+        });
+    }
+});
+
+// Trigger the change event to populate positions for current department
+document.getElementById('department').dispatchEvent(new Event('change'));
+</script>
+{% endblock %} 
